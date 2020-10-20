@@ -157,7 +157,6 @@ class printer():
         self.input=None
         self.setboardposns()
         self.solcount=0
-        self.startedat=time.time()
         self.solset=[]
 
     def setboardposns(self):
@@ -193,7 +192,7 @@ class printer():
             print(end='', flush=True)
             if self.solutions != 0 and self.solcount >= self.solutions:
                 self.done()
-                sys.exit(0)
+                return False
         elif btype=='invalid':
             for aline in formatBoard(aboard, "??? invalid board ???", colormap, clr=clr):
                 print(aline)
@@ -215,13 +214,14 @@ class printer():
                 for aline in formatBoard(aboard, title, colormap, clr=clr):
                     print(aline + Cursor.DOWN() + Cursor.BACK(34), end='')
                 print(end='', flush=True)
+        return True
 
     def done(self, msg=''):
         print(self.poslocs[-1][0] + Cursor.DOWN(16) + Style.RESET_ALL, end='')
         if self.solcount == 0:
             print(msg + "There don't appear to be any valid solutions!")
         else:
-            print(msg + '%d solutions found in %5.2f, %d partial prints skipped, %d printed.' % (self.solcount, time.time()-self.startedat, self.skipped, self.partials)) 
+            print(msg + '%d solutions found, %d partial prints skipped, %d printed.' % (self.solcount, self.skipped, self.partials)) 
 
 import solver as sudsolv
 
@@ -258,6 +258,7 @@ if __name__ == '__main__':
         if not aboard is None and validgrid(aboard):
             os.system('clear')
             pagent.oneprint(aboard, 'input')
+            startat=time.time()
             solv=(sudsolv.sudoboardbrute if args.compute == 0 else sudsolv.sudoboardsmart)(aboard, dfunc=pagent.oneprint, callall=not args.skipcount==0)
             try:
                 solv.sudsearch(nest=0)
@@ -265,6 +266,9 @@ if __name__ == '__main__':
             except KeyboardInterrupt:
                 msg='Aborted by keybaordinterrupt. '
             pagent.done(msg)
+            for i, atime in enumerate(solv.soltimes):
+                print('%3d: solved at %5.4f' % (i,atime))
+            print('complete in %5.4f' % (time.time()-startat))
         else:
             print('input board was not valid')
             if not aboard is None:
