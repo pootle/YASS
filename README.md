@@ -16,6 +16,6 @@ Run with
 
 python3 sudoku5.py -m 0 700800060 000009100 002005008 100003200 000002086 043760001 080500000 300040000 001086004 -s 0 -c 0
 
-Use c 1 for the fast version
+Use -c 1 for the fast version
 
-Use python3 Use python3  -h for parameter info
+Use python3 sudoku5.py -h for parameter info
