@@ -13,6 +13,8 @@ When a valid solution is found, it is passed to a callback function
 
 The method used allows all valid solutions to be found.
 """
+import time
+
 class sudoboardbrute():
     """
     A very simple pure brute force solver for sudoku.
@@ -25,6 +27,8 @@ class sudoboardbrute():
         self.dfunc=dfunc
         self.callall=callall
         self.breakout=False
+        self.startat=time.time()
+        self.soltimes=[]
 
     def findEmpty(self):
         """find the first unknown value position"""
@@ -64,6 +68,7 @@ class sudoboardbrute():
             return       
         rc=self.findEmpty()
         if rc is None:
+            self.soltimes.append(time.time() - self.startat)
             if self.dfunc(self.board, btype='solution', nest=nest) is False:
                 self.breakout=True
         else:
@@ -100,6 +105,8 @@ class sudoboardsmart():
         self.dfunc=dfunc
         self.callall=callall
         self.breakout=False
+        self.startat=time.time()
+        self.soltimes=[]
         self.freerowvals = [set([x for x in range(1,10) if not x in row]) for row in self.board]
         colordered = list(zip(*self.board))
         self.freecolvals = [set([x for x in range(1,10) if not x in col]) for col in colordered]
@@ -154,6 +161,7 @@ class sudoboardsmart():
             return
         freecounts=self.freelists()
         if freecounts is None:
+            self.soltimes.append(time.time()-self.startat)
             if self.dfunc(self.board, btype='solution', nest=nest+1) is False:
                 self.breakout-True
             return
@@ -177,6 +185,7 @@ class sudoboardsmart():
             if len(freecounts[fc]) > 0:
                 break
         else:
+            self.soltimes.append(time.time()-self.startat)
             if self.dfunc(self.board, btype='solution', nest=nest) is False:
                 self.breakout=True
             return
